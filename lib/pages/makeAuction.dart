@@ -43,7 +43,7 @@ class _AuctionMakePageState extends State<AuctionMakePage>{
               );
 
               Map data = _auction.toMap();
-              _postRequest('/auction/make', data);
+              _postRequest('/auction/register', data);
 
               // 이 페이지가 꺼질 때 이 페이지를 실행했던 친구에게  widget.todo를 넘겨준다
               //Navigator.of(context).pop();
@@ -80,6 +80,7 @@ class _AuctionMakePageState extends State<AuctionMakePage>{
                 child: Row(
                   children: const [
                     Text("경매 시작가", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+
                   ],
                 )
             );
