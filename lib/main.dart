@@ -1,3 +1,4 @@
+import 'package:auction/connect/http.dart';
 import 'package:auction/data/auction.dart';
 import 'package:auction/pages/makeAuction.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  List<Auction> auctionData = [
+    Auction(
+        name: "상품명1",
+        category: "TBD",
+        lowerLimitPrice: "1000",
+        upperLimitPrice: "100000",
+        details: "상품설명1"
+    ),
+    Auction(
+        name: "상품명2",
+        category: "TBD",
+        lowerLimitPrice: "2000",
+        upperLimitPrice: "200000",
+        details: "상품설명2"
+    ),
+  ];
+
+  late Future<List<Auction>> auctionList;
+
+  @override
+  void initState() {
+    super.initState();
+    auctionList = Http.getAuctionList('/auction');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,32 +96,83 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget getMainPage(){
-    return Column (
-      children: [
-        Container(
-          height: 100,
-          color: Colors.amber,
-          child: const Center(
-            child: Text("가로 스크롤로 해시태그 및 카테고리 등을 클릭",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        ),
-        Container(
-          height: 450,
-          color: Colors.pink,
-          child: const Center(
-            child: Text("ListView로 스크롤 가능한 경매 리스트 표시",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-        ),
-      ]
+  Widget getMainPage() {
+    return ListView.builder(
+      itemBuilder: (ctx, idx) {
+        if (idx == 0) {
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            color: Colors.cyan,
+            width: MediaQuery.of(context).size.width,
+            height: 60,
+          );
+        }else if (idx == 1) {
+          if (auctionData.isEmpty) {
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              child: const Text("진행 중인 경매가 없습니다.",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              color: Colors.amber,
+              width: MediaQuery.of(context).size.width,
+              height: 60,
+            );
+          } else {
+            return FutureBuilder<List<Auction>> (
+              future: auctionList,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return SingleChildScrollView(
+                    physics: const ScrollPhysics(),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,   // List가 null일 경우 처리 어떻게?
+                          itemBuilder: (BuildContext context, int idx) {
+                            Auction auction = snapshot.data![idx];
+                            return InkWell(
+                                splashColor: Colors.amber,
+                                highlightColor: Colors.pink,
+                                onTap: (){},
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blueAccent)
+                                  ),
+                                  padding: const EdgeInsets.all(3.0),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 20
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(children: [Text('상품명 : ' + auction.name)],),
+                                      Row(children: [Text('상한가 : ' + auction.upperLimitPrice)],),
+                                      Row(children: [Text('시작가 : ' + auction.lowerLimitPrice)],),
+                                    ],
+                                  ),
+                                )
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                // 기본적으로 로딩 Spinner를 보여줍니다.
+                return const CircularProgressIndicator();
+              },
+            );
+          }
+        }else {
+          return Container();
+        }
+      },
+      itemCount: 5,
     );
   }
+
 }
