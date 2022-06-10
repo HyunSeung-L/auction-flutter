@@ -1,12 +1,14 @@
-import 'package:auction/data/auction.dart';
+import 'package:auction/models/auction.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Http {
-  static String baseUrl = 'http://192.168.45.96:8080';
-  // 221.139.111.227
-  // 192.168.45.96
+  static String baseUrl = 'http://192.168.45.45:8080';
+  // localhost:8080 -> when using ios Simulator
+  // 10.0.2.2:8080 -> when using android emulator
+  // 192.168.45.96:8080 -> when using real android device
+  // 192.168.45.45:8080 -> when using real iphone device
 
   static void postAuction(String url, Map data) async {
     String postUrl = baseUrl + url;
@@ -26,8 +28,8 @@ class Http {
     String getUrl = baseUrl + url;
 
     final response = await http.get(Uri.parse(getUrl));
-    print(response.body);
-    print(response.statusCode);
+    //print(response.body);
+    //print(response.statusCode);
 
     if (response.statusCode == 200) {
       return compute(parseAuctions, response.body);
@@ -53,9 +55,6 @@ class Http {
       throw Exception('Failed to load Auction List');
     }
   }
-
-
-
 
   static Future<Auction> getAuction(String url) async {
     String getUrl = baseUrl + url;

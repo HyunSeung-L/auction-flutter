@@ -6,13 +6,15 @@ class Auction {
 
   String lowerLimitPrice; // 시작 가격
   String upperLimitPrice; // 상한 가격
+  //List<String> images;
 
   Auction({
     required this.name,
     required this.category,
     required this.lowerLimitPrice,
     required this.upperLimitPrice,
-    required this.details,
+    required this.details
+    //required this.images
   });
 
   Map<String, dynamic> toMap() {
@@ -31,7 +33,8 @@ class Auction {
         category: json['category'],
         lowerLimitPrice: json['lowerLimitPrice'],
         upperLimitPrice: json['upperLimitPrice'],
-        details: json['details']
+        details: json['details'],
+        //images: json['images']
     );
   }
 }
